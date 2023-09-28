@@ -1,0 +1,230 @@
+@import "../styles/variables";
+
+.home {
+    display: flex;
+    justify-content: center;
+
+    &-loader {
+        font-family: "Rye";
+
+        &-block {
+            background-color: $primaryColour;
+            width: 100%;
+            height: calc(100vh - 30px);
+            animation: fadeIn 0.5s forwards ease-in;
+        }
+
+        .letter {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            letter-spacing: 0.5rem;
+        }
+
+        .letter-c {
+            left: calc(50% - 154px);
+            animation: letterC 1.5s 1s forwards;
+        }
+
+        .letter-a {
+            left: calc(50% - 93px);
+            animation: letterA 1.5s 1s forwards;
+        }
+
+        .letter-m {
+            left: calc(50% - 22px);
+            animation: letterM 1.5s 1s forwards;
+        }
+
+        .letter-b {
+            left: calc(50% + 52px);
+            animation: letterB 1.5s 1s forwards;
+        }
+
+        .letter-i {
+            left: calc(50% + 99px);
+            animation: letterI 1.5s 1s forwards;
+        }
+
+        .letter-o {
+            left: calc(50% + 148px);
+            animation: letterO 1.5s 1s forwards;
+        }
+    }
+
+    &-title {
+        font-family: "Rye";
+    }
+
+    &-title-letter {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 80px;
+        letter-spacing: 0.5rem;
+    }
+
+    .letterC {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 75px);
+    }
+
+    .lettera {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 55px);
+    }
+
+    .letterm {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 42px);
+    }
+
+    .letterb {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 9px);
+    }
+
+    .letteri {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% + 16px);
+    }
+
+    .lettero {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% + 22px);
+    }
+
+    &-body {
+        padding-top: 50px;
+    }
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes letterC {
+    0% {
+        opacity: 1;
+    }
+    90% {
+        transform: scale(1) translate(-50%, -50%);
+        top: 50%;
+        left: calc(50% - 154px);
+    }
+    95% {
+        transform: scale(1) translate(-50%, -50%);
+    }
+    100% {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 75px);
+    }
+}
+
+@keyframes letterA {
+    0% {
+        opacity: 1;
+    }
+    80% {
+        transform: scale(1) translate(-50%, -50%);
+        top: 50%;
+        left: calc(50% - 93px);
+    }
+    90% {
+        transform: scale(1) translate(-50%, -50%);
+    }
+    100% {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 55px);
+    }
+}
+
+@keyframes letterM {
+    0% {
+        opacity: 1;
+    }
+    70% {
+        transform: scale(1) translate(-50%, -50%);
+        top: 50%;
+        left: calc(50% - 22px);
+    }
+    82% {
+        transform: scale(1) translate(-50%, -50%);
+    }
+    100% {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 42px);
+    }
+}
+
+@keyframes letterB {
+    0% {
+        opacity: 1;
+    }
+    60% {
+        transform: scale(1) translate(-50%, -50%);
+        top: 50%;
+        left: calc(50% + 52px);
+    }
+    80% {
+        transform: scale(1) translate(-50%, -50%);
+    }
+    100% {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% - 9px);
+    }
+}
+
+@keyframes letterI {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1) translate(-50%, -50%);
+        top: 50%;
+        left: calc(50% + 99px);
+    }
+    75% {
+        transform: scale(1) translate(-50%, -50%);
+    }
+    100% {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% + 16px);
+    }
+}
+
+@keyframes letterO {
+    0% {
+        opacity: 1;
+    }
+    40% {
+        transform: scale(1) translate(-50%, -50%);
+        top: 50%;
+        left: calc(50% + 148px);
+    }
+    65% {
+        transform: scale(1) translate(-50%, -50%);
+    }
+    100% {
+        transform: scale(0.3) translate(-50%, -50%);
+        top: 30px;
+        left: calc(50% + 22px);
+    }
+}

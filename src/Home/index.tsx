@@ -1,20 +1,25 @@
 import React, { useEffect, useState } from "react";
+import Airtable from "airtable";
 import _ from "lodash";
 
 import Cards from "../Cards";
-import players from "./data";
+import players, { Player } from "./data";
 import "./styles.scss";
 
 const BASE_ID = process.env.AIRTABLE_BASE_ID;
-const TABLE_ID = process.env.AIRTABLE_TABLE_ID;
 const TOKEN = process.env.AIRTABLE_ACCESS_TOKEN;
+const GIPHY_KEY = process.env.GIPHY_API_KEY;
+
+Airtable.configure({
+    endpointUrl: "https://api.airtable.com",
+    apiKey: TOKEN,
+});
+
+const base = Airtable.base(BASE_ID || "");
 
 const randomOddEven = () => Math.floor(Math.random() * 10) % 2 === 0;
 
-const Home = () => {
-    const [loading, setLoading] = useState(true);
-    // const [results, setResults] = useState(null);
-
+const setPlayersList = () => {
     const allPlayers = _.shuffle(players);
     allPlayers.forEach((player) => {
         const color = randomOddEven() ? "red" : "black";
@@ -28,20 +33,55 @@ const Home = () => {
                 ? "spades"
                 : "clubs";
     });
+    return allPlayers;
+};
 
-    // useEffect(() => {
-    //     fetch(
-    //         `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}/listRecords`,
-    //         {
-    //             headers: {
-    //                 Authentication: `Bearer ${TOKEN}`,
-    //             },
-    //         }
-    //     )
-    //         .then((response) => response.json())
-    //         .then((json) => console.log("json", json))
-    //         .catch((error) => console.error(error));
-    // }, []);
+export interface Record {
+    id: string;
+    name: string;
+    wins: number;
+}
+
+const Home = () => {
+    const [loading, setLoading] = useState(true);
+    const [results, setResults] = useState<Record[] | null>(null);
+    const [players, setPlayers] = useState<Player[] | null>(null);
+    const [activeCard, setActiveCard] = useState("");
+    const [recordUpdated, setRecordUpdated] = useState(false);
+    const [surpriseImage, setSurpriseImage] = useState("");
+    const [openModal, setOpenModal] = useState(false);
+
+    useEffect(() => {
+        if (!players) {
+            setPlayers(setPlayersList());
+        }
+    }, []);
+
+    useEffect(() => {
+        base("League Results")
+            .select({
+                maxRecords: 3,
+                view: "Grid view",
+            })
+            .eachPage(
+                (records) => {
+                    const recordsData = records.map((record) => {
+                        return {
+                            id: record.id,
+                            name: record.get("Name") as string,
+                            wins: record.get("Wins") as number,
+                        };
+                    });
+                    setResults(recordsData);
+                },
+                (err) => {
+                    if (err) {
+                        console.error(err);
+                        return;
+                    }
+                }
+            );
+    }, []);
 
     useEffect(() => {
         if (loading) {
@@ -50,6 +90,66 @@ const Home = () => {
             }, 3800);
         }
     }, [loading]);
+
+    const updateScore = (id: string, name: string, newScore: number) => {
+        base("League Results").update(
+            [
+                {
+                    id: id,
+                    fields: {
+                        Name: name,
+                        Wins: newScore,
+                    },
+                },
+            ],
+            (err, records) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+
+                if (records?.length && records?.length > 0) {
+                    const recordsData = results?.map((result) => {
+                        if (result.id === id) {
+                            return {
+                                ...result,
+                                wins: records[0].get("Wins") as number,
+                            };
+                        }
+                        return result;
+                    });
+                    if (recordsData) {
+                        setResults(recordsData);
+                        setRecordUpdated(true);
+                    }
+                }
+            }
+        );
+    };
+
+    const unsetRecordUpdated = () => {
+        setRecordUpdated(false);
+    };
+
+    const getSurprise = async () => {
+        const res = await fetch(
+            `https://api.giphy.com/v1/gifs/random?api_key=${GIPHY_KEY}&tag=@theoffice`
+        ).then((response) => {
+            if (!response.ok) {
+                throw new Error(response.statusText);
+            }
+            return response.json();
+        });
+
+        setSurpriseImage(res.data.images.original.url || "");
+        setOpenModal(true);
+    };
+
+    const closeModal = () => {
+        setOpenModal(false);
+        unsetRecordUpdated();
+        setActiveCard("");
+    };
 
     if (loading) {
         return (
@@ -78,8 +178,31 @@ const Home = () => {
                 <span className="home-title-letter lettero">o</span>
             </div>
             <div className="home-body">
-                <Cards allPlayers={allPlayers} />
+                {players && results ? (
+                    <Cards
+                        allPlayers={players}
+                        results={results}
+                        activeCard={activeCard}
+                        setActiveCard={setActiveCard}
+                        updateScore={updateScore}
+                        recordUpdated={recordUpdated}
+                        unsetRecordUpdated={unsetRecordUpdated}
+                        getSurprise={getSurprise}
+                    />
+                ) : null}
             </div>
+            {openModal && (
+                <div className="modal-background">
+                    <div className="modal-foreground">
+                        <div className="modal-image">
+                            <div className="modal-close" onClick={closeModal}>
+                                <img src="/assets/cross.svg" />
+                            </div>
+                            <img className="modal-img" src={surpriseImage} />
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

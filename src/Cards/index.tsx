@@ -1,7 +1,21 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./styles.scss";
 import { Player } from "../Home/data";
+import { Record } from "../Home";
+
+const mergeArrays = (arr1: Player[], arr2: Record[] | []) => {
+    let merged = [];
+
+    for (let i = 0; i < arr1.length; i++) {
+        merged.push({
+            ...arr1[i],
+            ...arr2.find((itmInner) => itmInner.name === arr1[i].name),
+        });
+    }
+
+    return merged;
+};
 
 const CardName = ({
     playerName,
@@ -30,21 +44,69 @@ const CardName = ({
     );
 };
 
-const Cards = ({ allPlayers }: { allPlayers: Player[] }) => {
-    const [activeCard, setActiveCard] = useState("");
+const Cards = ({
+    allPlayers,
+    results,
+    updateScore,
+    activeCard,
+    setActiveCard,
+    recordUpdated,
+    unsetRecordUpdated,
+    getSurprise,
+}: {
+    allPlayers: Player[];
+    results: Record[] | null;
+    updateScore: (id: string, name: string, newScore: number) => void;
+    activeCard: string;
+    setActiveCard: (card: string) => void;
+    recordUpdated: boolean;
+    unsetRecordUpdated: () => void;
+    getSurprise: () => void;
+}) => {
+    const [players, setPlayers] = useState(
+        mergeArrays(allPlayers, results || [])
+    );
+
+    useEffect(() => {
+        if (results) {
+            setPlayers(mergeArrays(allPlayers, results));
+        }
+    }, [results]);
 
     const showScores = (name: string) => {
+        if (recordUpdated) return;
         activeCard === name ? setActiveCard("") : setActiveCard(name);
+    };
+
+    const handleUpdateScore = (
+        e: React.MouseEvent<HTMLDivElement>,
+        index: number
+    ) => {
+        e.stopPropagation();
+        const { id, name, wins } = players[index];
+        updateScore(id || "", name, (wins || 0) + 1);
+    };
+
+    const noTwins = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        unsetRecordUpdated();
+        setActiveCard("");
+    };
+
+    const yesTwins = (e: React.MouseEvent<HTMLDivElement>) => {
+        e.stopPropagation();
+        getSurprise();
     };
 
     return (
         <div className="cards section typeset">
-            {allPlayers.map((player, i) => (
+            {players.map((player, i) => (
                 <div
                     id={`${player.name}`}
-                    className={`card column column--trio ${activeCard === player.name ? "active" : ""
-                        }`}
-                    key={`${player.name}`}
+                    className={`card column column--trio ${
+                        activeCard === player.name ? "active" : ""
+                    } ${recordUpdated ? "allActive" : ""}`}
+                    key={`card-${player.name}-${i}`}
                     onClick={() => showScores(player.name)}
                 >
                     <div className="card-inner">
@@ -72,7 +134,43 @@ const Cards = ({ allPlayers }: { allPlayers: Player[] }) => {
                                 ></div>
                             </div>
                         </div>
-                        <div className="card-back">SCORES</div>
+                        <div className="card-back">
+                            <div className="card-back-inner">
+                                <div
+                                    className="card-back-background"
+                                    style={{
+                                        backgroundImage: `url('/assets/card-background.svg')`,
+                                    }}
+                                />
+                                <div
+                                    className="card-score"
+                                    onClick={(e) => handleUpdateScore(e, i)}
+                                >
+                                    <span>{player.wins}</span>
+                                </div>
+                                {recordUpdated && activeCard === player.name ? (
+                                    <div className="card-twins">
+                                        <div className="card-twins-label">
+                                            The Twins ?
+                                        </div>
+                                        <div className="card-twins-actions">
+                                            <div
+                                                className="card-twins-no"
+                                                onClick={(e) => noTwins(e)}
+                                            >
+                                                <img src="/assets/cross.svg" />
+                                            </div>
+                                            <div
+                                                className="card-twins-yes"
+                                                onClick={(e) => yesTwins(e)}
+                                            >
+                                                <img src="/assets/tick.svg" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : null}
+                            </div>
+                        </div>
                     </div>
                 </div>
             ))}

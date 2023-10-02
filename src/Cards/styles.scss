@@ -1,16 +1,27 @@
 @import "../styles/variables";
+@import "../styles/mixins";
 
 .cards {
     display: flex;
     align-items: center;
-    flex: 1 1 auto;
+    flex-direction: column;
     height: 100%;
     opacity: 0;
     animation: fadeIn 1s 1s forwards;
 
+    @include breakpoint(break-1) {
+        flex: 1 1 auto;
+        flex-direction: row;
+    }
+
     .card {
         perspective: 1000px;
         box-sizing: border-box;
+        margin: 10px 0;
+
+        @include breakpoint(break-1) {
+            margin: 0 auto;
+        }
 
         &-inner {
             cursor: pointer;
@@ -23,10 +34,10 @@
         }
 
         &-image-wrapper {
-            padding: 60px;
+            padding: 65px;
 
             .card-image {
-                height: 300px;
+                height: 320px;
                 max-width: 100%;
                 border-radius: 0.5rem;
                 background-position: center;
@@ -34,7 +45,7 @@
             }
         }
 
-        .card-name {
+        &-name {
             position: absolute;
             top: 15px;
             left: 13px;
@@ -61,7 +72,7 @@
             }
         }
 
-        .card-name-upsidedown {
+        &-name-upsidedown {
             transform: rotate(180deg);
             bottom: 15px;
             right: 13px;
@@ -69,12 +80,12 @@
             left: initial;
         }
 
-        .card-first-letter {
+        &-first-letter {
             font-size: 45px;
             margin-right: 4px;
         }
 
-        .card-rest {
+        &-rest {
             letter-spacing: 0.05rem;
         }
 
@@ -85,10 +96,68 @@
         .black {
             color: $secondaryColour;
         }
+
+        &-twins {
+            animation: fadeIn 0.8s forwards ease;
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, 0);
+            white-space: nowrap;
+        }
+
+        &-twins-label {
+            background-color: $tertiaryColour;
+            color: $primaryFontColour;
+            border-radius: 20px;
+            padding: 8px 15px;
+        }
+
+        &-twins-actions {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin-top: 12px;
+
+            img {
+                height: 20px;
+            }
+        }
+
+        &-twins-no {
+            background-color: $primaryColour;
+            color: $primaryFontColour;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        &-twins-yes {
+            background-color: #30914c;
+            color: $primaryFontColour;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            cursor: pointer;
+        }
     }
 
     .card.active .card-inner {
         transform: rotateY(180deg);
+    }
+
+    .card.allActive .card-inner {
+        transform: rotateY(180deg);
+        cursor: initial;
     }
 
     .card-front,
@@ -114,6 +183,56 @@
         position: absolute;
         top: 0;
         left: 0;
+
+        &-inner {
+            position: relative;
+            height: calc(100% - 60px);
+            margin: 30px;
+            border-radius: 6px;
+            border: 1px solid rgba(199, 162, 87, 0.2);
+            // box-shadow: 1px 1px 8px 5px rgba(199, 162, 87, 0.2);
+        }
+
+        &-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+    }
+
+    .card-score {
+        position: absolute;
+        top: 15%;
+        left: 50%;
+        transform-origin: 15% 50%;
+        transform: translate(-50%, 0);
+        background-color: $tertiaryColour;
+        color: $primaryFontColour;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        -webkit-transition: all 300ms;
+        -moz-transition: all 300ms;
+        transition: all 300ms;
+
+        span {
+            font-family: "Rye";
+            font-size: 40px;
+        }
+
+        &:hover {
+            transform-origin: 15% 50%;
+            transform: scale(1.1) translate(-50%, 0);
+        }
     }
 }
 
